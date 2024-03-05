@@ -1,0 +1,37 @@
+library('phylotools') #importing FASTA
+library('tidyverse') #data manipulation
+library('taxize') #handeling taxonamie, load this first! hten taxizedb
+library('taxizedb') #usinf offline taxonamie database
+source("functions/class2treeMod.R") #add some functions that are helpfull
+library('seqinr') #for writing FastaFiles
+
+# Sourcing the functions
+source('01_open.R')
+source('02_clean.R')
+source('03_functions.R')
+
+# Main
+ main <- function(){
+   # Import Fasta files and clean up the data
+   codh <- import_fasta_and_cleanup('data/coos.fasta', 'coos')
+   cooc <- import_fasta_and_cleanup('data/cooc.fasta', 'cooc')
+   
+   # Merge the dataframes
+   fasta.df <- rbind(codh, cooc)
+   
+   # Assign taxid
+   fasta.df <- assign_taxid(fasta.df)
+   
+   # Get classification
+   taxonimic_classification <- get_classification(fasta.df)
+   
+   # Check if taxonomic levels goes down to species and append fasta.df
+   fasta.df <- check_species(taxonimic_classification, fasta.df)
+   
+   # CleanUps
+   fasta.df <- general_cleanup(fasta.df)
+   fasta.df <- species_cleanup(fasta.df)
+   
+   # Write fasta sequences for each species, if needed
+   # write_fasta_per_species(fasta.df)
+ }
