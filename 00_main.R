@@ -41,6 +41,9 @@ source('03_functions.R')
    fasta.df <- general_cleanup(fasta.df)
    fasta.df <- species_cleanup(fasta.df)
    
-   # Write fasta sequences for each species, if needed
+   # Write fasta sequences for each species
     write_fasta_per_species(fasta.df)
+    
+    # Run CD-Hit to remove duplicates on each organism individually
+    run_cd_hit()
  }

@@ -3,6 +3,7 @@ create_output_folder <- function() {
   dir.create('output', showWarnings = FALSE)
   dir.create(paste('output/',Sys.Date(), sep=''), showWarnings = FALSE)
   dir.create(paste('output/',Sys.Date(),'/fasta_sorted_by_species', sep=''), showWarnings = FALSE)
+  dir.create(paste('output/',Sys.Date(),'/fasta_sorted_by_species/fasta_species_clustered', sep=''), showWarnings = FALSE)
 }
 
 
