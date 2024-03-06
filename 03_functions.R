@@ -142,3 +142,46 @@ create_clade_histograms2 <- function(fasta_data, clade_colors = c("#FFD92F","#A6
   ggsave(paste('output/',Sys.Date(),'/clade_histogram.png', sep=''), clade_histogram, width = 10, height = 10, units = "cm")
   return(clade_histogram)
 }
+
+generate_tree_from_organisms <- function(fasta_data){
+  taxonomic_classifications <- c()# Get list of ranks and IDs for input species
+  unique(fasta_data$organism) %>% 
+    purrr::walk(function(organism) {
+      if(organism != "Lacrimispora xylanolytica"){ 
+        taxonomic_classifications[organism] <<- taxizedb::classification(organism, db='ncbi')[1]
+      }
+    })
+  # Save the taxonomic classifications
+  saveRDS(taxonomic_classifications, file = paste('output/',Sys.Date(),'/taxonomic_classifications.RData', sep=''))
+  # Generate a phylogenetic tree from the taxonomic classifications
+  phylogenetic_tree <- class2tree(taxonomic_classifications)
+  return(phylogenetic_tree)
+}
+
+create_and_save_tree_of_organism_with_clades <- function(fasta_df, clade_colors = c("#FFD92F","#A6D854","#FC8D62","#E78AC3","#8DA0CB","#66C2A5","#56B4E9","#E5C494","#B3B3B3")) {
+  # Melt the data frame for plotting
+  phylogenetic_tree<- generate_tree_from_organisms(fasta_df)
+  melted_df <- as.data.frame(how_many_clades_per_organism(fasta_df)) 
+  melted_df$organism <- row.names(melted_df)
+  melted_df <- reshape2::melt(melted_df)
+  
+  # Create a circular ggtree plot
+  circular_plot <- ggtree(phylogenetic_tree$phylo, layout = "circular") + geom_tiplab(size=1, offset=8) 
+  
+  # Add a geom_fruit layer to the circular plot
+  circular_plot_with_fruit <- circular_plot + ggtreeExtra::geom_fruit(
+    data= melted_df,
+    geom=geom_tile,
+    mapping=aes(y=organism, fill=variable, x=variable, alpha = value ),
+    pwidth=0.12, 
+    color = "grey90", 
+    offset = 0.01, size = 0.02) +
+    scale_alpha_continuous(range=c(0, 1),
+                           guide=guide_legend(keywidth = 0.3, 
+                                              keyheight = 0.3, order=5)) +
+    scale_fill_manual(values=clade_colors, guide=guide_legend(keywidth = 0.3, 
+                                                                   keyheight = 0.3, order=4)) 
+  
+  # Save the plot
+  ggsave(paste('output/',Sys.Date(),'/phylogenetic_overview_organisms_clades.png', sep=''), circular_plot_with_fruit, width = 10, height = 10, units = "cm")
+}
