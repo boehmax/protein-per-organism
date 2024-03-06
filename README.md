@@ -1,7 +1,5 @@
 # Proteins per Organism
 
-# NiCODH Analysis
-
 This script takes a list of FASTA files containing NiCODH, adds various types of information, and generates several plots for analysis.
 
 ## Prerequisites
