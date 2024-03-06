@@ -5,6 +5,9 @@ library('taxizedb') #usinf offline taxonamie database
 #source("functions/class2treeMod.R") #add some functions that are helpfull
 library('seqinr') #for writing FastaFiles
 
+# Color palette
+clade_colours <- c("#FFD92F","#A6D854","#FC8D62","#E78AC3","#8DA0CB","#66C2A5","#56B4E9","#E5C494","#B3B3B3")
+
 # Sourcing the functions
 source('01_open.R')
 source('02_clean.R')
@@ -46,4 +49,15 @@ source('03_functions.R')
     
     # Run CD-Hit to remove duplicates on each organism individually
     run_cd_hit()
+    
+    # Re-import clustered fasta files
+    fasta.df <- clustered_fasta_import()
+    
+    # Make correlation matrix
+    make_correlation_matrix(fasta.df%>%
+                              subset(select = c(organism, clade)), 
+                            unique(fasta.df$clade))
+    
+    
+    
  }

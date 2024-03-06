@@ -89,7 +89,14 @@ add_clade_information <- function(fasta_data){
   return(fasta_data_clade)
 }
 
-
-
+clustered_fasta_import <- function(path_to_fasta_species_clustered = paste("output/",Sys.Date(),"/fasta_sorted_by_species/fasta_species_clustered/", sep="")){
+  fasta.filenames <- list.files(path_to_fasta_species_clustered, pattern="*.fasta", full.names=TRUE) #"fasta_species_of" is folder with orthofinder cleaned fastas
+  ldf <- lapply(fasta.filenames, phylotools::read.fasta)
+  ndf <- bind_rows(ldf, .id = "id")[-1] #to make the list into a big daraframe and kill the id column
+  fasta.total.cleaned <- separate(ndf, seq.name, c('protein_id', 'protein', 'clade', 'taxid', 'organism'), sep =',') #extract all data from fasta names
+  fasta.total.cleaned$clade <- as.factor(fasta.total.cleaned$clade)
+  fasta.total.cleaned$taxid <- as.factor(fasta.total.cleaned$taxid)
+  return(fasta.total.cleaned)
+}
 
 
