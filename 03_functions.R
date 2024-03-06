@@ -184,4 +184,5 @@ create_and_save_tree_of_organism_with_clades <- function(fasta_df, clade_colors 
   
   # Save the plot
   ggsave(paste('output/',Sys.Date(),'/phylogenetic_overview_organisms_clades.png', sep=''), circular_plot_with_fruit, width = 10, height = 10, units = "cm")
+  ggsave(paste('output/',Sys.Date(),'/phylogenetic_overview_organisms_clades.pdf', sep=''), circular_plot_with_fruit, width = 30, height = 30, units = "cm")
 }
