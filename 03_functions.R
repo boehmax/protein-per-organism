@@ -58,3 +58,87 @@ make_correlation_matrix <- function(df, vector) {
   ggsave(paste('output/',Sys.Date(),'/correlation_matrix.png', sep=''), plot, width = 10, height = 10, units = "cm")
   return(plot)
 }
+
+how_many_clades_per_organism <- function(fasta_data) {
+  # Create a data frame with organism and clade
+  organism.and.clade <- data.frame(fasta_data$organism, fasta_data$clade)
+  
+  # Create a matrix from the data frame
+  organism.and.clade.matrix <- as.data.frame.matrix(table(organism.and.clade))
+  
+  # Calculate the total for each clade
+  organism.and.clade.matrix$total <- rowSums(organism.and.clade.matrix)
+  
+  return(organism.and.clade.matrix)
+}
+
+
+create_clade_histograms <- function(fasta_data, clade_colors = c("#FFD92F","#A6D854","#FC8D62","#E78AC3","#8DA0CB","#66C2A5","#56B4E9","#E5C494","#B3B3B3")) {
+  fasta_data.matrix <- how_many_clades_per_organism(fasta_data)
+  # Melt the data and filter rows where value > 0
+  filtered_data <- reshape2::melt(fasta_data.matrix) %>%
+    filter(value > 0)
+  
+  # Initialize a list to store all plots
+  clade_histograms <- list()
+  
+  # Determine the number of clades dynamically
+  num_clades <- length(unique(fasta_data$clade))
+  
+  # Loop over each clade
+  for(i in 1:num_clades){
+    # Subset the data for the current clade
+    clade_data <- subset(filtered_data, as.character(variable) == as.character(unique(fasta_data$clade)[i]))
+    
+    # Create a histogram for the current clade
+    clade_histograms[[i]] <- ggplot(clade_data, aes(x=value, fill = variable)) + 
+      geom_histogram(col = 'white', binwidth = 1, fill = clade_colors[i]) +
+      xlim(0,8)
+  }
+  
+  # Combine all clade histograms into a single figure
+  combined_histogram <- subplot(clade_histograms, nrows = 2) %>%
+    layout(title = 'Multiples of one clade distribution')
+  # Initialize a list to store the annotations
+  annotations <- list()
+  
+  # Loop over each clade to generate the annotations
+  for(i in 1:num_clades){
+    annotations[[i]] <- list(
+      x = (i-1)/num_clades + 1/(2*num_clades), 
+      y = ifelse(i %% 2 == 0, 0.35, 0.9), 
+      text = paste("Clade", as.character(unique(fasta_data$clade)[i])), 
+      showarrow = F, 
+      xref='paper', 
+      yref='paper', 
+      xanchor = "center",
+      showarrow = FALSE
+    )
+  }
+  
+  # Add annotations to the combined histogram
+  annotated_histogram <- combined_histogram %>% layout(annotations = annotations)
+  return(annotated_histogram)
+}
+
+create_clade_histograms2 <- function(fasta_data, clade_colors = c("#FFD92F","#A6D854","#FC8D62","#E78AC3","#8DA0CB","#66C2A5","#56B4E9","#E5C494","#B3B3B3")) {
+  fasta_data.matrix <- how_many_clades_per_organism(fasta_data)
+  # Melt the data and filter rows where value > 0
+  filtered_data <- suppressMessages(suppressWarnings(reshape2::melt(fasta_data.matrix))) %>%
+    filter(value > 0)
+  
+  # Determine the number of clades dynamically
+  num_clades <- length(unique(fasta_data$clade))
+  
+  # Create a histogram for each clade
+  clade_histogram <- ggplot(filtered_data, aes(x=value, fill = variable)) + 
+    geom_histogram(col = 'white', binwidth = 1) +
+    scale_fill_manual(values = clade_colors) +
+    facet_wrap(~variable, nrow = 2) +
+    theme_minimal() +
+    theme(strip.text = element_text(size = 12), legend.position = "none")+
+    labs(x ="Number of CODH in one organism", y = "Count of Organism")
+  
+  ggsave(paste('output/',Sys.Date(),'/clade_histogram.png', sep=''), clade_histogram, width = 10, height = 10, units = "cm")
+  return(clade_histogram)
+}

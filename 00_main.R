@@ -4,6 +4,9 @@ library('taxize') #handeling taxonamie, load this first! hten taxizedb
 library('taxizedb') #usinf offline taxonamie database
 #source("functions/class2treeMod.R") #add some functions that are helpfull
 library('seqinr') #for writing FastaFiles
+library('reshape2') #for correlation matrix
+library('ggplot2') #for correlation matrix
+library('plotly') #for correlation matrix
 
 # Color palette
 clade_colours <- c("#FFD92F","#A6D854","#FC8D62","#E78AC3","#8DA0CB","#66C2A5","#56B4E9","#E5C494","#B3B3B3")
@@ -47,17 +50,18 @@ source('03_functions.R')
    # Write fasta sequences for each species
     write_fasta_per_species(fasta.df)
     
-    # Run CD-Hit to remove duplicates on each organism individually
-    run_cd_hit()
+    # Run CD-Hit to remove duplicates on each organism individually, only works on LINUX
+    #run_cd_hit()
     
     # Re-import clustered fasta files
     fasta.df <- clustered_fasta_import()
     
     # Make correlation matrix
-    make_correlation_matrix(fasta.df%>%
+    correlation_matrix <- make_correlation_matrix(fasta.df%>%
                               subset(select = c(organism, clade)), 
                             unique(fasta.df$clade))
     
-    
+    # How many CODH of the same clade in one organism
+    clade_histograms2<- create_clade_histograms2(fasta.df)
     
  }
