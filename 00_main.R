@@ -1,8 +1,7 @@
 library('phylotools') #importing FASTA
 library('tidyverse') #data manipulation
-library('taxize') #handeling taxonamie, load this first! hten taxizedb
-library('taxizedb') #usinf offline taxonamie database
-#source("functions/class2treeMod.R") #add some functions that are helpfull
+library('taxize') #handeling taxonamie, load this first! then taxizedb
+library('taxizedb') #using offline taxonamie database
 library('seqinr') #for writing FastaFiles
 library('reshape2') #for correlation matrix
 library('ggplot2') #for correlation matrix

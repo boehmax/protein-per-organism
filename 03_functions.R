@@ -42,11 +42,12 @@ plot_correlation_matrix <- function(correlation.matrix) {
   output.p <- ggplot2::ggplot(long) + 
     ggplot2::geom_tile(aes(x=Var1, y=Var2, fill=value)) +
     ggplot2::geom_text(aes(x=Var1, y=Var2, label=round(value, 2)), size=4, col = "black") +
-    ggplot2::ggtitle('Correlation of co-occurrence') +
+   # ggplot2::ggtitle('Correlation of co-occurrence') +
     ggplot2::scale_fill_gradient(low = "white", high = "#66C2A5") +
     ggplot2::ylab('... how likely is to have a CODH from Clade ...') + 
     ggplot2::xlab('If an organism has a CODH from Clade...') +
-    ggplot2::scale_x_discrete(position = "top")
+    ggplot2::scale_x_discrete(position = "top") +
+    theme(legend.position="none")
   
   return(output.p)
 }
@@ -132,12 +133,16 @@ create_clade_histograms2 <- function(fasta_data, clade_colors = c("#FFD92F","#A6
   
   # Create a histogram for each clade
   clade_histogram <- ggplot(filtered_data, aes(x=value, fill = variable)) + 
-    geom_histogram(col = 'white', binwidth = 1) +
+    geom_histogram(binwidth = 1) +
+    stat_count(geom = 'text',
+               size = 2,
+               aes(label = after_stat(count)),
+               position = position_stack(vjust = 1))+
     scale_fill_manual(values = clade_colors) +
     facet_wrap(~variable, nrow = 2) +
-    theme_minimal() +
     theme(strip.text = element_text(size = 12), legend.position = "none")+
     labs(x ="Number of CODH in one organism", y = "Count of Organism")
+  
   
   ggsave(paste('output/',Sys.Date(),'/clade_histogram.png', sep=''), clade_histogram, width = 10, height = 10, units = "cm")
   return(clade_histogram)
@@ -186,3 +191,33 @@ create_and_save_tree_of_organism_with_clades <- function(fasta_df, clade_colors 
   ggsave(paste('output/',Sys.Date(),'/phylogenetic_overview_organisms_clades.png', sep=''), circular_plot_with_fruit, width = 10, height = 10, units = "cm")
   ggsave(paste('output/',Sys.Date(),'/phylogenetic_overview_organisms_clades.pdf', sep=''), circular_plot_with_fruit, width = 30, height = 30, units = "cm")
 }
+
+
+#Reload old data
+reload_request <- function(){
+  reload_request_answer <- readline(prompt = "Do you want to reload the data? (y/n): ")
+  if(reload_request_answer == "y" | reload_request_answer == "Y"){
+    reload_request_date <- readline(prompt = "Please enter the date of the data you want to reload (yyyy-mm-dd): ")
+    fasta.df <- clustered_fasta_import(path_to_fasta_species_clustered = paste("output/",reload_request_date,"/fasta_sorted_by_species/fasta_species_clustered/", sep=""))
+    info.file<-file(paste("output/",Sys.Date(),"/info.txt", sep=""))
+    writeLines(c(paste("The plots in this folder used data frome another date: ",reload_request_date, sep="") ), info.file)
+    close(info.file)
+    return(fasta.df)
+  } else {
+    reload_request_secound_answer <- readline(prompt = "Do you want to continue with the current data? (y/n): ")
+    if(reload_request_secound_answer == "y" | reload_request_secound_answer == "Y"){
+      return(FALSE)
+    } 
+    else {
+      reload_request()
+    }
+  }
+}
+
+
+
+
+
+
+
+
