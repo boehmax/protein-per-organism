@@ -20,8 +20,14 @@ source('03_functions.R')
 # Main
  main <- function(){
    create_output_folder()
+   
+   #Ask User if they want to reload an old run
+   fasta.df <- reload_request()
+   
+   if(is.data.frame(fasta.df)==FALSE){ #if the reload request was denied, continue with loading the new data
+  
    # Import Fasta files and clean up the data
-   codh <- import_fasta_and_cleanup('data/test_coos.fasta', 'coos')
+   codh <- import_fasta_and_cleanup('data/FinalCODHHenrikNov2023.fasta', 'coos')
    #cooc <- import_fasta_and_cleanup('data/cooc.fasta', 'cooc')
    
    # Merge the dataframes
@@ -52,20 +58,22 @@ source('03_functions.R')
     write_fasta_per_species(fasta.df)
     
     # Run CD-Hit to remove duplicates on each organism individually, only works on LINUX
-    #run_cd_hit()
+    run_cd_hit()
     
     # Re-import clustered fasta files
     fasta.df <- clustered_fasta_import()
+ }
     
     # Make correlation matrix
     correlation_matrix <- make_correlation_matrix(fasta.df%>%
                               subset(select = c(organism, clade)), 
-                            unique(fasta.df$clade))
+                            sort(unique(fasta.df$clade)))
     
     # How many CODH of the same clade in one organism
     clade_histograms2<- create_clade_histograms2(fasta.df)
     
     # Create and save tree of organism with clades
-    create_and_save_tree_of_organism_with_clades(fasta.df)
+   # create_and_save_tree_of_organism_with_clades(fasta.df)
     
  }
+ 
