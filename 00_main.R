@@ -1,6 +1,8 @@
 library('phylotools') #importing FASTA
 library('tidyverse') #data manipulation
 library('taxize') #handeling taxonamie, load this first! hten taxizedb
+# Install 'taxize' in R:
+#install.packages('taxize', repos = c('https://ropensci.r-universe.dev', 'https://cloud.r-project.org'))
 library('taxizedb') #usinf offline taxonamie database
 #source("functions/class2treeMod.R") #add some functions that are helpfull
 library('seqinr') #for writing FastaFiles

@@ -4,7 +4,7 @@
 cdhit_path="cd-hit"
 
 # Change to the directory provided as an argument
-cd "output/2024-09-10/fasta_sorted_by_species"
+cd "output/2025-01-17/fasta_sorted_by_species"
 
 # Loop over all .fasta files
 for k in *.fasta
@@ -24,16 +24,16 @@ output="cluster_representative.txt"
 temp=$(mktemp)
 
 # Ensure temporary file is removed on exit
-trap 'rm -f $temp' EXIT
+trap 'rm -f "$temp"' EXIT
 
 # Remove the output file if it exists
-rm -f $output
+rm -f "$output"
 
 # Process each .clstr file in the directory
-for file in $dir/*.clstr
+for file in "$dir"/*.clstr
 do
     # Process each cluster in the file
-    awk '
+    awk -v output="$output" '
     BEGIN { cluster_id = 0 }
     /^>Cluster/ {
         cluster_id++
@@ -48,9 +48,9 @@ do
         } else {
             percentage = gensub(/^.*at ([0-9.]+)%.*$/, "\\1", "g", $0)
             if (main_entry) {
-                printf "%s\t%s\t%s\n", main_entry, entry, percentage >> "'"$output"'"
+                printf "%s\t%s\t%s\n", main_entry, entry, percentage >> output
             }
         }
     }
-    ' $file
+    ' "$file"
 done
