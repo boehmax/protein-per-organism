@@ -167,11 +167,18 @@ list(
   tar_target(
     clade_histograms,
     create_clade_histograms2(fasta_df_clustered)
-  )
+  ),
   
-  # Uncomment to include phylogenetic tree
-  # tar_target(
-  #   phylogenetic_tree,
-  #   create_and_save_tree_of_organism_with_clades(fasta_df_clustered)
-  # )
+  # Create phylogenetic tree (conditional based on config)
+  tar_target(
+    phylogenetic_tree,
+    {
+      if (isTRUE(config$generate_tree)) {
+        create_and_save_tree_of_organism_with_clades(fasta_df_clustered)
+      } else {
+        message("Phylogenetic tree generation skipped (disabled in config)")
+        NULL
+      }
+    }
+  )
 )

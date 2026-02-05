@@ -2,6 +2,13 @@
 
 This script takes a list of FASTA files containing NiCODH, adds various types of information, and generates several plots for analysis.
 
+## Quick Links
+
+- [Quick Start Guide](QUICKSTART_TARGETS.md) - Get started with the targets pipeline
+- [Workflow Comparison](WORKFLOW_COMPARISON.md) - Traditional vs targets pipeline
+- [Data Structure](DATA_STRUCTURE.md) - Input/output file format documentation
+- [Main README](#how-to-use) - Detailed usage instructions below
+
 ## Prerequisites
 
 Before running this script, make sure you have the following R packages installed:
