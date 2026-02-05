@@ -24,7 +24,8 @@ if (length(args) > 0 && args[1] %in% c("-h", "--help", "help")) {
   cat("  visualize   - Visualize the pipeline graph\n")
   cat("  manifest    - Show the pipeline manifest\n")
   cat("  outdated    - Show which targets are outdated\n")
-  cat("  clean       - Clean all targets\n")
+  cat("  clean       - Clean all targets (interactive)\n")
+  cat("  clean --force - Clean all targets without confirmation\n")
   cat("  help        - Show this help message\n\n")
   cat("Examples:\n")
   cat("  Rscript run_targets.R\n")
@@ -61,13 +62,24 @@ if (length(args) == 0) {
   }
 } else if (args[1] == "clean") {
   cat("Cleaning all targets...\n")
-  response <- readline(prompt = "Are you sure you want to clean all targets? (y/n): ")
-  if (tolower(response) == "y") {
-    tar_destroy()
-    cat("✓ All targets cleaned.\n")
+  if (interactive()) {
+    response <- readline(prompt = "Are you sure you want to clean all targets? (y/n): ")
+    if (tolower(response) == "y") {
+      tar_destroy()
+      cat("✓ All targets cleaned.\n")
+    } else {
+      cat("Clean cancelled.\n")
+    }
   } else {
-    cat("Clean cancelled.\n")
+    # Non-interactive mode - require explicit confirmation via command line
+    cat("Error: Clean command requires confirmation.\n")
+    cat("Use: Rscript run_targets.R clean --force\n")
+    quit(save = "no", status = 1)
   }
+} else if (args[1] == "clean" && length(args) > 1 && args[2] == "--force") {
+  cat("Cleaning all targets (forced)...\n")
+  tar_destroy()
+  cat("✓ All targets cleaned.\n")
 } else {
   cat("Unknown command:", args[1], "\n")
   cat("Use 'Rscript run_targets.R help' for usage information.\n")

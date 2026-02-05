@@ -144,7 +144,8 @@ list(
   tar_target(
     fasta_df_clustered,
     {
-      if (config$run_clustering && dir.exists(paste0('output/', Sys.Date(), '/fasta_sorted_by_species/fasta_species_clustered'))) {
+      clustered_path <- file.path(output_folder, 'fasta_sorted_by_species', 'fasta_species_clustered')
+      if (config$run_clustering && dir.exists(clustered_path)) {
         clustered_fasta_import()
       } else {
         message("Using original (non-clustered) data")
