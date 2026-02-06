@@ -1,5 +1,7 @@
 # Proteins per Organism
 
+<a href="https://doi.org/10.5281/zenodo.16736754"><img src="https://zenodo.org/badge/764595660.svg" alt="DOI"></a>
+
 This script takes a list of FASTA files containing NiCODH, adds various types of information, and generates several plots for analysis.
 
 ## Prerequisites
