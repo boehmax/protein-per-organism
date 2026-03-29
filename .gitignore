@@ -16,6 +16,10 @@
 .Rproj.user/
 .Rhistory
 
+# targets package cache
+_targets/
+.targets/
+
 # Specific things to ignore
 output/
 data/
